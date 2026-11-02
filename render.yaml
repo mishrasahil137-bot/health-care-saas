@@ -1,0 +1,34 @@
+databases:
+  - name: health-care-db
+    databaseName: health_care
+    user: health_care_user
+    plan: free
+    region: singapore
+    postgresMajorVersion: 16
+    ipAllowList: []
+services:
+  - type: web
+    name: health-care-saas
+    runtime: node
+    plan: free
+    region: singapore
+    branch: main
+    buildCommand: npm install --omit=dev
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: health-care-db
+          property: connectionString
+      - key: DATABASE_SSL
+        value: "false"
+      - key: JWT_SECRET
+        generateValue: true
+      - key: SUPER_ADMIN_EMAIL
+        sync: false
+      - key: SUPER_ADMIN_PASSWORD
+        sync: false
